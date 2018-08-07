@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "concurrently": "^3.6.1"
+  },
+  "engines": {
+    "node": "9.11.1"
   }
 }
