@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { login } from '../actions/loginAction';
-import io from 'socket.io-client';
+import './login.css';
+import { sendLoginMessage } from '../actions/sendMsgAction';
+
 import PropTypes from 'prop-types';
 
 
@@ -10,7 +12,7 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.onLogin = this.onLogin.bind(this);
-        this.socket = io();
+        this.socket = props.socket;
     }
 
     onLogin() {
@@ -20,7 +22,18 @@ class Login extends Component {
             username = 'Temp' + uid;
         }
         this.socket.emit('login', {uid:uid, username: username});
-        this.props.login(username, uid);
+        let self = this;
+        this.socket.on('loggedin', function(userInfo) {
+            self.props.login(username, uid , userInfo);
+            self.props.sendLoginMessage({
+                type: 'system',
+                username: userInfo.newUser.username,
+                uid: userInfo.newUser.uid,
+                action: 'login',
+                id: 'sys_msg' + new Date().getTime(),
+                time: new Date().getTime()
+            });
+        });
     }
 
     generateUid() {
@@ -29,17 +42,24 @@ class Login extends Component {
 
     render() {
         return (
-            <div>
-                Username: <br/>
-                <input type="text" ref="username"/><br/>
-                <button onClick={this.onLogin}>Login</button>
+            <div className="container">
+                <form onSubmit={(e)=> {this.onLogin(); e.preventDefault();}}>
+                    <h2>Enter your chat nick name</h2>
+                    <input className="form-control" ref="username" autoFocus/>
+                    <button className="btn btn-primary btn block login-btn"
+                            onClick={this.onLogin}
+                            type="button">
+                            Enter Charoom
+                    </button>
+                </form>
             </div>
         );
     }
 }
 
 Login.propTypes = {
-    login: PropTypes.func.isRequired
+    login: PropTypes.func.isRequired,
+    sendLoginMessage: PropTypes.func.isRequired
 }
 
-export default connect(null, { login })(Login);
+export default connect(null, { login, sendLoginMessage })(Login);

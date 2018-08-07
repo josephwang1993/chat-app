@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
-import loginReducer from './loginReducer';
+import statusReducer from './appStatus';
+import messageReducer from './messageReducer';
 
 export default combineReducers({
-    login: loginReducer
+    appStatus: statusReducer,
+    messages: messageReducer
 });

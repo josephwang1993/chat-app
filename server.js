@@ -9,22 +9,35 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/login', (req, res) => {
-  let username = req.body.username;
-  res.status(200).send('Success');
-});
+let onlineUsers = {}
 
 io.on('connection', function(socket) {
-  console.log('a user connected');
-  socket.on('login', function(userInfo) {
-    socket.id = userInfo.uid;
-    console.log(socket.id);
+  socket.on('login', function(newUser) {
+    socket.id = newUser.uid;
+    if(socket.id in onlineUsers === false) {
+      onlineUsers[newUser.uid] = newUser.username;
+    }
+    io.emit('loggedin', {
+      onlineUsers: onlineUsers,
+      newUser: newUser
+    });
   });
 
   socket.on('disconnect', function() {
-    console.log('user disconnected');
-  })
-});
+    if(socket.id in onlineUsers) {
+      let leftUser = onlineUsers[socket.id];
+      delete onlineUsers[socket.id];
+      io.emit('logout', {
+        onlineUsers: onlineUsers,
+        leftUser: leftUser,
+        leftUserId: socket.id
+      })
+    }
+  });
 
+  socket.on('message', function(messageObj) {
+    socket.broadcast.emit('message', messageObj);
+  });
+});
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

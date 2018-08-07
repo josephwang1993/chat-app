@@ -1,13 +1,13 @@
-import { LOGIN } from './types';
+import { LOGOUT } from './types';
 
-export function login(username, uid, userInfo) {
+export function logout(username, uid, userInfo) {
     return function(dispatch) {
             dispatch({
-                type: LOGIN,
+                type: LOGOUT,
                 payload: {
                     username: username,
                     uid: uid,
-                    onlineUsers: userInfo.onlineUsers
+                    onlineUsers: userInfo.onlineUsers,
                 }
             });
     }
