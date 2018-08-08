@@ -10,3 +10,7 @@ A chatroom built with React, Redux, SocketIO and Node+Express
 * You may want to use Redux DevTool, please refer to: https://github.com/zalmoxisus/redux-devtools-extension for instructions
 
 * Working on a few know bugs and adding new features
+
+
+# Demo
+https://ebchatroom.herokuapp.com/
